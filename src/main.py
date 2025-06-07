@@ -1,5 +1,7 @@
+from utilities import copy_static_to_public
+
 def main():
-    pass
+    copy_static_to_public()
 
 if __name__ == '__main__':
     main()
