@@ -1,6 +1,7 @@
 from enum import Enum
-from types import CodeType
-
+from leafnode import LeafNode
+from parentnode import ParentNode
+from inline_utilities import text_to_textnodes
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -28,7 +29,7 @@ def block_to_block_type(block_text):
     if len(block_text) > i and i < 7 and block_text[i] == " ": # assume " " cannot be the first char
         return BlockType.HEADING
     # CODE
-    if len(block_text) >= 6 and block_text[0:3] == "```" and block_text[-3:] == "```":
+    if len(block_text) >= 6 and block_text[0:4] == "```\n" and block_text[-4:] == "\n```":
         return BlockType.CODE
     # QUOTE
     is_quote = True
@@ -53,3 +54,35 @@ def block_to_block_type(block_text):
         return BlockType.ORDERED_LIST
     # PARAGRAPH
     return BlockType.PARAGRAPH
+
+# returns a list of HTMLNodes that represents the provided block string
+def block_to_html_node(block):
+    type = block_to_block_type(block)
+    match type:
+        case BlockType.PARAGRAPH:
+            single_line = block.replace("\n", " ")
+            text_nodes = text_to_textnodes(single_line)
+            children = list(map(lambda node: node.to_html_node(), text_nodes))
+            return ParentNode("p", children)
+        case BlockType.HEADING:
+            split = block.split(" ", 1)
+            heading_size = len(split[0])
+            return LeafNode(f"h{heading_size}", split[1])
+        case BlockType.CODE:
+            text = block.split("\n", 1)[1].strip("```")
+            child = LeafNode("code", text)
+            return ParentNode("pre", [child])
+        case BlockType.QUOTE:
+            lines = block.split("\n")
+            text = "\n".join(list(map(lambda line: line[1:], lines)))
+            return LeafNode("blockquote", text)
+        case BlockType.UNORDERED_LIST:
+            lines = block.split("\n")
+            bullets = list(map(lambda line: line[2:], lines))
+            children = list(map(lambda bullet: LeafNode("li", bullet), bullets))
+            return ParentNode("ul", children)
+        case BlockType.ORDERED_LIST:
+            lines = block.split("\n")
+            bullets = list(map(lambda line: line[3:], lines))
+            children = list(map(lambda bullet: LeafNode("li", bullet), bullets))
+            return ParentNode("ol", children)
