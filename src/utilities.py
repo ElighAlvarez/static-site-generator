@@ -1,4 +1,4 @@
-from block_utilities import markdown_to_blocks, block_to_html_node
+from block_utilities import *
 from parentnode import ParentNode
 import shutil, os
         
@@ -14,3 +14,11 @@ def copy_static_to_public():
     if os.path.exists("public"):
         shutil.rmtree("public")
     shutil.copytree("static", "public")
+
+# returns the text of the first h1 header
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        if block[:2] == "# ":
+            return block[2:]
+    raise Exception("no h1 header found in markdown")
