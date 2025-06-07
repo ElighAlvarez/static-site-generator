@@ -1,5 +1,5 @@
 import unittest
-from utilities import *
+from inline_utilities import *
 
 class TestUtilities(unittest.TestCase):
     def test_split_text_node_1(self):
