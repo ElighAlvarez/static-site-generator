@@ -55,6 +55,16 @@ def block_to_block_type(block_text):
     # PARAGRAPH
     return BlockType.PARAGRAPH
 
+def blockquote_markdown_lines_to_text(lines):
+    text_lines = []
+    for line in lines:
+        if len(line) <= 2:
+            text_lines.append("")
+        else:
+            text_lines.append(line[2:])
+    return "\n".join(text_lines)
+
+
 # returns a list of HTMLNodes that represents the provided block string
 def block_to_html_node(block):
     type = block_to_block_type(block)
@@ -74,7 +84,7 @@ def block_to_html_node(block):
             return ParentNode("pre", [child])
         case BlockType.QUOTE:
             lines = block.split("\n")
-            text = "\n".join(list(map(lambda line: line[1:], lines)))
+            text = blockquote_markdown_lines_to_text(lines)
             return LeafNode("blockquote", text)
         case BlockType.UNORDERED_LIST:
             lines = block.split("\n")
