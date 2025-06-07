@@ -24,6 +24,7 @@ class TextNode:
     def __repr__(self):
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
 
+    # returns an HTMLNode representation of this TextNode
     def to_html_node(self):
         match self.text_type:
             case TextType.TEXT:

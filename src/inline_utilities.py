@@ -1,6 +1,7 @@
 from textnode import TextNode, TextType
 import re
 
+# returns the TextNode representation of a string input text
 def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_image(nodes)
@@ -10,6 +11,9 @@ def text_to_textnodes(text):
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
     return nodes
 
+# returns a list of nodes with delimiter-delimited sections converted
+# into text_type TextNodes. Returned nodes maintains ordering of the text
+# within old_nodes. Does not remove nodes that are not converted.
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     for node in old_nodes:
@@ -39,6 +43,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.append(node)
     return new_nodes
 
+# returns a list of nodes, where TextNodes with type TEXT have been
+# split into TEXT and IMAGE nodes if applicable.
 def split_nodes_image(old_nodes):
     new_nodes = []
     for old_node in old_nodes:
@@ -63,6 +69,8 @@ def split_nodes_image(old_nodes):
             new_nodes.append(TextNode(text, TextType.TEXT))
     return new_nodes
 
+# returns a list of nodes, where TextNodes with type TEXT have been
+# split into TEXT and LINK nodes if applicable.
 def split_nodes_link(old_nodes):
     new_nodes = []
     for old_node in old_nodes:
@@ -87,8 +95,10 @@ def split_nodes_link(old_nodes):
             new_nodes.append(TextNode(text, TextType.TEXT))
     return new_nodes
 
+# returns a list of (text, filepath) tuples, one tuple for each image tag
 def extract_markdown_images(text):
     return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
 
+# returns a list of (text, url) tuples, one tuple for each link tag
 def extract_markdown_links(text):
     return re.findall(r"(?<!\!)\[(.*?)\]\((.*?)\)", text)

@@ -8,6 +8,8 @@ class HTMLNode:
     def to_html(self):
         raise NotImplementedError()
 
+    # returns an HTML string representation of this HTMLNode's props
+    # Ex: " prop1=1 prop2=2"
     def props_to_html(self):
         if self.props == None:
             return ""
