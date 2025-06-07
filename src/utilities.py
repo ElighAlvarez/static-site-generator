@@ -22,3 +22,20 @@ def extract_title(markdown):
         if block[:2] == "# ":
             return block[2:]
     raise Exception("no h1 header found in markdown")
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path) as f:
+        markdown = f.read()
+    with open(template_path) as f:
+        template = f.read()
+
+    title = extract_title(markdown)
+    body_html = markdown_to_html_node(markdown).to_html()
+    output = template.replace("{{ Title }}", title).replace("{{ Content }}", body_html)
+
+    dest_dir = os.sep.join(dest_path.split(os.sep)[:-1])
+    if not os.path.exists(dest_dir):
+        os.mkdir(dest_dir)
+    with open(dest_path, "w") as f:
+        f.write(output)

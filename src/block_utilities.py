@@ -79,10 +79,22 @@ def block_to_html_node(block):
         case BlockType.UNORDERED_LIST:
             lines = block.split("\n")
             bullets = list(map(lambda line: line[2:], lines))
-            children = list(map(lambda bullet: LeafNode("li", bullet), bullets))
+            children = list(map(
+                lambda bullet: ParentNode(
+                    "li", 
+                    list(map(lambda node: node.to_html_node(), text_to_textnodes(bullet)))
+                ), 
+                bullets
+            ))
             return ParentNode("ul", children)
         case BlockType.ORDERED_LIST:
             lines = block.split("\n")
             bullets = list(map(lambda line: line[3:], lines))
-            children = list(map(lambda bullet: LeafNode("li", bullet), bullets))
+            children = list(map(
+                lambda bullet: ParentNode(
+                    "li", 
+                    list(map(lambda node: node.to_html_node(), text_to_textnodes(bullet)))
+                ), 
+                bullets
+            ))
             return ParentNode("ol", children)
